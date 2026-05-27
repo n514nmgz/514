@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+ <html lang="zh-CN">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>黄衣服</title>
+     <style>
+         * {
+             margin: 0;
+             padding: 0;
+             box-sizing: border-box;
+             user-select: none;
+         }
+         body {
+             width: 100vw;
+             height: 100vh;
+             overflow: hidden;
+             background: #0a0f20;
+             font-family: "Microsoft YaHei", sans-serif;
+             position: relative;
+         }
+         /* 雪花飘落效果 */
+         .snowflake {
+             position: absolute;
+             color: #fff;
+             font-size: 12px;
+             opacity: 0.8;
+             animation: snowfall linear infinite;
+         }
+         @keyframes snowfall {
+             0% { top: -20px; opacity: 1; }
+             100% { top: 100vh; opacity: 0.3; }
+         }
+         /* 顶部飘落的红色文字 */
+         .float-red {
+             position: absolute;
+             color: #ff3366;
+             font-size: 20px;
+             font-weight: bold;
+             text-shadow: 0 0 8px #ff3366;
+             animation: floatDown linear infinite;
+         }
+         @keyframes floatDown {
+             0% { top: -30px; opacity: 1; }
+             100% { top: 100vh; opacity: 0; }
+         }
+         /* 主窗口：蓝色霓虹边框 */
+         .main-window {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             width: 90%;
+             max-width: 500px;
+             background: rgba(10, 20, 50, 0.9);
+             border: 3px solid #00ccff;
+             border-radius: 15px;
+             box-shadow: 0 0 20px #00ccff, inset 0 0 15px rgba(0, 204, 255, 0.2);
+             overflow: hidden;
+             z-index: 10;
+             display: none;
+         }
+         /* 窗口顶部栏 */
+         .window-header {
+             background: #0066cc;
+             padding: 12px;
+             text-align: center;
+             color: #00ffff;
+             font-size: 22px;
+             font-weight: bold;
+         }
+         /* 命令行日志区域 */
+         .log-area {
+             padding: 15px;
+             min-height: 200px;
+             color: #00ff66;
+             font-family: monospace;
+             font-size: 16px;
+             line-height: 1.6;
+             white-space: pre-line;
+         }
+         /* 黄衣服团队横幅（带照片） */
+         .team-banner {
+             margin: 10px 15px;
+             background: #000;
+             border: 2px solid #00ccff;
+             border-radius: 10px;
+             padding: 15px;
+             text-align: center;
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23000'/%3E%3Cpath d='M0 50 L20 50 L20 30 L40 30 L40 70 L60 70 L60 50 L80 50 L80 80 L100 80' stroke='%2300ccff' fill='none' opacity='0.3'/%3E%3C/svg%3E");
+             background-size: 200px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 15px;
+         }
+         .team-text {
+             flex: 1;
+         }
+         .team-title {
+             color: #ff0000;
+             font-size: 36px;
+             font-weight: 900;
+             text-shadow: 
+                 -2px -2px 0 #fff,
+                 2px -2px 0 #fff,
+                 -2px 2px 0 #fff,
+                 2px 2px 0 #fff;
+             margin-bottom: 10px;
+         }
+         .team-subtitle {
+             color: #fff;
+             font-size: 14px;
+             line-height: 1.5;
+             font-weight: bold;
+         }
+         .team-photo {
+             width: 110px;
+             height: 140px;
+             border-radius: 5px;
+             background: #ddd;
+             background-image: url("https://cdn.phototourl.com/free/2026-05-05-4d320cd1-ae53-481e-93e5-50f8a2f1e91c.jpg");
+             background-size: cover;
+             background-position: center;
+             border: 2px solid #00ccff;
+         }
+         /* 按钮区域 */
+         .btn-area {
+显示: flex;
+             justify-content: space-around;
+             padding: 15px;
+             gap: 15px;
+         }
+         .btn {
+             flex: 1;
+             padding: 12px;
+             border: 没有一个；
+             border-radius: 10px;
+字体大小: 22px;
+字体粗细: 大胆的；
+             cursor: pointer;
+             transition: all 0.2s;
+         }
+         .btn.start {
+背景: #00cc33;
+颜色: #fff；
+箱形阴影: 0010px#00cc33;
+         }
+         .btn.exit {
+背景: #ff2222；
+颜色: #fff；
+箱形阴影: 0010px#ff2222；
+         }
+.btn：悬停{
+改变: 刻度(1.05)；
+         }
+/* 格机页面效果 */
+.geji-page{
+位置: 绝对的；
+顶端: 0;
+左: 0;
+宽度: 100%;
+高度: 100%;
+背景: #6a0dad；
+显示: 没有一个；
+         }
+.geji-文本{
+位置: 绝对的；
+颜色: #fff；
+字体大小: 24px；
+字体粗细: 大胆的；
+动画: 下浮线性无穷大；
+         }
+         /* 密码错误提示页 */
+.错误提示{
+颜色: #fff；
+             text-align: 中心；
+上边距: 50px；
+字体大小: 28px；
+         }
+</style>
+</head>
+<body>
+<! -- 雪花背景 -->
+<script>
+for(设i=0；i<30；i++){
+常数snow=document.createElement('div');
+snow.className='雪花';
+snow.innerText='❄';
+snow.style.left=Math.random()*100+'%';
+雪。风格。animationDuration=5+Math.Random()*10+'S';
+snow.style.animationDelay=Math.random()*5+'S';
+document.body.appendChild(snow)；
+         }
+函数spawnRedText(){
+常量文本=document.createElement('div')；
+text.className='红色浮子';
+text.innerText='tg频道@SYQVQ';
+text.style.left=Math.random()*90+'%';
+文本。风格。animationDuration=3+Math.random()*4+'S';
+document.body.appendChild(文本)；
+setTimeout(()=>text.remove()，7000)；
+         }
+setInterval(spawnRedText，500)；
+</script>
+<! -- 主窗口 -->
+<div class="主窗口">
+<div class="窗口标题">官方频道@SYQVQ</div>
+<div class="日志区域"id="logArea"></div>
+<div class="团队横幅">
+<div class="team-text">
+<div class="团队名称">黄衣服专业团队</div>
+<div class="小组字幕">
+                     专业格机/一键黑砖/远程格机<br>
+最慢1秒钟 · 跑路专业技术
+</div>
+</div>
+<div class="团队照片"></div>
+</div>
+<div class="btn-area">
+<按钮类="btn启动"id="startBtn">启动</button>
+<按钮类="btn退出"id="exitBtn">退出</button>
+</div>
+</div>
+<! -- 格机页面 -->
+<div class="geji-page"id="gejiPage"></div>
+<script>
+// 兼容静态托管平台：关闭页面兜底逻辑
+函数forceCloseBrowser(){
+尝试{
+window.opener=null；
+窗口.打开('', '_self');
+window.close()；
+             }捕获(e){
+                 // 平台禁止关闭标签时，展示错误提示
+document.body.innerHTML='<div class="错误提示">密码错误，已退出</div>'；
+             }
+         }
+         // 卡密验证
+常数密码=提示("请输入访问卡密：");
+if(pwd！=="黄衣服牛逼"){
+forceCloseBrowser()；
+}其他{
+document.querySelector('.主窗口').style.display='块'；
+         }
+常量logArea=document.getElementById('logArea')；
+常数startBtn=document.getElementById('startBtn')；
+常量exitBtn=document.getElementById('exitBtn')；
+Const gejiPage=document.getElementById('gejiPage')；
+常量logtexts=[
+"[格机]fastboot擦除引导加载程序"，
+"[格机]fastboot擦除系统”，
+"[格机]fastboot擦除供应商”，
+"[格机]fastboot擦除产品”，
+{
+[，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，]fastboot擦除持久"，
+"[格机]fastboot擦除调制解调器"，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，
+“[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp，[，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，，，，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，，，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp"，[格机]fastboot擦除dsp",
+"[格机]fastboot擦除NVRAM"
+         ];
+函数typeLog(){
+让lineIndex=0；
+函数printLine(){
+if(lineIndex>=logTexts.length)返回；
+常数行=logTexts[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；[lineIndex]；
+让charIndex=0；
+Const lineDiv=文档.createElement('div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；'div')；
+logArea.appendChild(lineDiv)；
+"[格机]fastboot擦除供应商”，{
+if(charIndex<line.length){
+lineDiv.innerText+=line[charIndex]；
+charIndex++；
+}其他{
+clearInterval(typeInterval)；
+lineIndex++；
+setTimeout(printLine，300)；
+                     }
+}, 50);, 50);
+"[格机]fastboot擦除供应商”，}
+printLine()；
+         }
+函数enterGeji(){{
+document.querySelector('.主窗口').style.display='无'；'.主窗口').style.display='无'；
+gejiPage.style.display='块'；
+"[格机]fastboot擦除供应商”{
+常量文本=document.createElement('div')；'div')；'div')；'div')；
+文本。className='geji-text'；'geji-text'；'geji-text'；'geji-text'；
+text.innerText='你已被格机😂😂😂'；'你已被格机😂😂😂'；'你已被格机😂😂😂'；'你已被格机😂😂😂'；
+text.style.left=Math.random()*90+"%"；"%"；'%'；
+文本。风格。animationDuration=3+数学随机()*3+'S'；'S'；'S'；'S';
+gejiPage.appendChild(文本)；
+setTimeout(()=>text.remove()，7000)；
+}, 200);}, 200);, 200);}, 200);
+         }
+startBtn.addEventListener('单击'，()=>{'单击'，()=>{'单击'，()=>{'单击'，()=>{
+typeLog()；
+setTimeout(enterGeji，4000)；
+         });
+exitBtn.addEventListener('单击'，forceCloseBrowser)；'单击'，forceCloseBrowser)；'单击'，forceCloseBrowser)；'单击'，forceCloseBrowser)；
+if(pwd==="黄衣服牛逼"){"黄衣服牛逼"){"黄衣服牛逼"){"黄衣服牛逼"){
+setTimeout(typeLog，1000)；
+         }
+</script>
+</body>
+</html>
+    
