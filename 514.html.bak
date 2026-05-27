@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄衣服</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #0a0f20;
+            font-family: "Microsoft YaHei", sans-serif;
+            position: relative;
+        }
+
+        /* 雪花飘落效果 */
+        .snowflake {
+            position: absolute;
+            color: #fff;
+            font-size: 12px;
+            opacity: 0.8;
+            animation: snowfall linear infinite;
+        }
+        @keyframes snowfall {
+            0% { top: -20px; opacity: 1; }
+            100% { top: 100vh; opacity: 0.3; }
+        }
+
+        /* 顶部飘落的红色文字 */
+        .float-red {
+            position: absolute;
+            color: #ff3366;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ff3366;
+            animation: floatDown linear infinite;
+        }
+        @keyframes floatDown {
+            0% { top: -30px; opacity: 1; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        /* 主窗口：蓝色霓虹边框 */
+        .main-window {
+            position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 500px;
+        background: rgba(10, 20, 50, 0.9);
+        border: 3px solid #00ccff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px #00ccff, inset 0 0 15px rgba(0, 204, 255, 0.2);
+        overflow: hidden;
+        z-index: 10;
+        display: none;
+        }
+
+        /* 窗口顶部栏 */
+        .window-header {
+            background: #0066cc;
+            padding: 12px;
+            text-align: center;
+            color: #00ffff;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* 命令行日志区域 */
+        .log-area {
+            padding: 15px;
+            min-height: 200px;
+            color: #00ff66;
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        /* 黄衣服团队横幅（带照片） */
+        .team-banner {
+            margin: 10px 15px;
+            background: #000;
+            border: 2px solid #00ccff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23000'/%3E%3Cpath d='M0 50 L20 50 L20 30 L40 30 L40 70 L60 70 L60 50 L80 50 L80 80 L100 80' stroke='%2300ccff' fill='none' opacity='0.3'/%3E%3C/svg%3E");
+            background-size: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .team-text {
+            flex: 1;
+        }
+        .team-title {
+            color: #ff0000;
+            font-size: 36px;
+            font-weight: 900;
+            text-shadow: 
+                -2px -2px 0 #fff,
+                2px -2px 0 #fff,
+                -2px 2px 0 #fff,
+                2px 2px 0 #fff;
+            margin-bottom: 10px;
+        }
+        .team-subtitle {
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+        .team-photo {
+            width: 110px;
+            height: 140px;
+            border-radius: 5px;
+            background: #ddd;
+            background-image: url("https://cdn.phototourl.com/free/2026-05-05-4d320cd1-ae53-481e-93e5-50f8a2f1e91c.jpg");
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #00ccff;
+        }
+
+        /* 按钮区域 */
+        .btn-area {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            gap: 15px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn.start {
+            background: #00cc33;
+            color: #fff;
+            box-shadow: 0 0 10px #00cc33;
+        }
+        .btn.exit {
+            background: #ff2222;
+            color: #fff;
+            box-shadow: 0 0 10px #ff2222;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* 格机页面效果 */
+        .geji-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #6a0dad;
+            display: none;
+        }
+        .geji-text {
+            position: absolute;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            animation: floatDown linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 雪花背景 -->
+    <script>
+        for (let i = 0; i < 30; i++) {
+            const snow = document.createElement('div');
+            snow.className = 'snowflake';
+            snow.innerText = '❄';
+            snow.style.left = Math.random() * 100 + '%';
+            snow.style.animationDuration = 5 + Math.random() * 10 + 's';
+            snow.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(snow);
+        }
+
+        function spawnRedText() {
+            const text = document.createElement('div');
+            text.className = 'float-red';
+            text.innerText = 'tg频道@SYQVQ';
+            text.style.left = Math.random() * 90 + '%';
+            text.style.animationDuration = 3 + Math.random() * 4 + 's';
+            document.body.appendChild(text);
+            setTimeout(() => text.remove(), 7000);
+        }
+        setInterval(spawnRedText, 500);
+    </script>
+
+    <!-- 主窗口 -->
+    <div class="main-window">
+        <div class="window-header">官方频道@SYQVQ</div>
+        <div class="log-area" id="logArea"></div>
+        <div class="team-banner">
+            <div class="team-text">
+                <div class="team-title">黄衣服专业团队</div>
+                <div class="team-subtitle">
+                    专业格机/一键黑砖/远程格机<br>
+                    最慢1秒钟 · 跑路专业技术
+                </div>
+            </div>
+            <div class="team-photo"></div>
+        </div>
+        <div class="btn-area">
+            <button class="btn start" id="startBtn">启动</button>
+            <button class="btn exit" id="exitBtn">退出</button>
+        </div>
+    </div>
+
+    <!-- 格机页面 -->
+    <div class="geji-page" id="gejiPage"></div>
+
+    <script>
+        // 强制关闭当前窗口/标签页
+        function forceCloseBrowser() {
+            window.opener = null;
+            window.open('', '_self');
+            window.close();
+            document.body.innerHTML = '<h1 style="color:white;text-align:center;margin-top:50%">密码错误，已退出</h1>';
+        }
+
+        // 卡密验证
+        const pwd = prompt("请输入访问卡密：");
+        if (pwd !== "黄衣服牛逼") {
+            // 密码错：直接关浏览器
+            forceCloseBrowser();
+        } else {
+            // 密码对：显示主页
+            document.querySelector('.main-window').style.display = 'block';
+        }
+
+        const logArea = document.getElementById('logArea');
+        const startBtn = document.getElementById('startBtn');
+        const exitBtn = document.getElementById('exitBtn');
+        const gejiPage = document.getElementById('gejiPage');
+
+        const logTexts = [
+            "[格机] fastboot erase bootloader",
+            "[格机] fastboot erase system",
+            "[格机] fastboot erase vendor",
+            "[格机] fastboot erase product",
+            "[格机] fastboot erase cust",
+            "[格机] fastboot erase persist",
+            "[格机] fastboot erase modem",
+            "[格机] fastboot erase dsp",
+            "[格机] fastboot erase nvram"
+        ];
+
+        function typeLog() {
+            let lineIndex = 0;
+            function printLine() {
+                if (lineIndex >= logTexts.length) return;
+                const line = logTexts[lineIndex];
+                let charIndex = 0;
+                const lineDiv = document.createElement('div');
+                logArea.appendChild(lineDiv);
+                const typeInterval = setInterval(() => {
+                    if (charIndex < line.length) {
+                        lineDiv.innerText += line[charIndex];
+                        charIndex++;
+                    } else {
+                        clearInterval(typeInterval);
+                        lineIndex++;
+                        setTimeout(printLine, 300);
+                    }
+                }, 50);
+            }
+            printLine();
+        }
+
+        function enterGeji() {
+            document.querySelector('.main-window').style.display = 'none';
+            gejiPage.style.display = 'block';
+            setInterval(() => {
+                const text = document.createElement('div');
+                text.className = 'geji-text';
+                text.innerText = '你已被格机😂😂😂';
+                text.style.left = Math.random() * 90 + '%';
+                text.style.animationDuration = 3 + Math.random() * 3 + 's';
+                gejiPage.appendChild(text);
+                setTimeout(() => text.remove(), 7000);
+            }, 200);
+        }
+
+        startBtn.addEventListener('click', () => {
+            typeLog();
+            setTimeout(enterGeji, 4000);
+        });
+        // 修改：点击退出直接关闭网页
+        exitBtn.addEventListener('click', forceCloseBrowser);
+
+        // 密码正确后自动运行日志
+        if (pwd === "黄衣服牛逼") {
+            setTimeout(typeLog, 1000);
+        }
+    </script>
+</body>
+</html>
